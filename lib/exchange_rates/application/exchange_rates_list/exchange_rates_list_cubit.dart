@@ -1,14 +1,12 @@
 import 'package:bloc/bloc.dart';
-import 'package:crypto_tracker/models/account.dart';
-import 'package:crypto_tracker/models/exhcange_rate.dart';
+import 'package:crypto_tracker/exchange_rates/exchange_rates.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
-import 'package:hive/hive.dart';
 
-part 'crypto_tracker_state.dart';
+part 'exchange_rates_list_state.dart';
 
-class CryptoTrackerCubit extends Cubit<CryptoTrackerState> {
-  CryptoTrackerCubit() : super(const CryptoTrackerState.initial());
+class ExchangeRatesListCubit extends Cubit<ExchangeRatesListState> {
+  ExchangeRatesListCubit() : super(const ExchangeRatesListState.initial());
 
   Future<void> loadExchangeRates() async {
     emit(state.copyWith(
@@ -57,25 +55,5 @@ class CryptoTrackerCubit extends Cubit<CryptoTrackerState> {
         areExhangeRatesLoading: false,
       ),
     );
-  }
-
-  void loadAccounts() {
-    emit(state.copyWith(areAccountsLoading: true));
-    final accounts = Hive.box<Account>('accounts').values.toList();
-    emit(state.copyWith(
-      accounts: accounts,
-      areAccountsLoaded: true,
-      areAccountsLoading: false,
-    ));
-  }
-
-  Future<void> addAccount(Account account) async {
-    await Hive.box<Account>('accounts').put(account.coin, account);
-    loadAccounts();
-  }
-
-  Future<void> updateAccount(Account account) async {
-    await Hive.box<Account>('accounts').put(account.coin, account);
-    loadAccounts();
   }
 }
