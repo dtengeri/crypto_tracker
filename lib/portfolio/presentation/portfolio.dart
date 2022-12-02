@@ -94,8 +94,10 @@ class _PortfolioState extends State<Portfolio> {
                     builder: (context, exhangeRatesState) {
                       return PortfolioItem(
                         account: state.accounts[index],
-                        exchangeRate: exhangeRatesState
-                            .exchangeRates[state.accounts[index].coin],
+                        exchangeRate: exhangeRatesState.mapOrNull(
+                          loaded: (value) =>
+                              value.exchangeRates[state.accounts[index].coin],
+                        ),
                       );
                     },
                   ),
