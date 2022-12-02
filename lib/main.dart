@@ -1,6 +1,6 @@
 import 'package:crypto_tracker/exchange_rates/exchange_rates.dart';
+import 'package:crypto_tracker/get_it.dart';
 import 'package:crypto_tracker/portfolio/portfolio.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -9,6 +9,7 @@ Future<void> main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(AccountAdapter());
   await Hive.openBox<Account>('accounts');
+  configureDependencies();
   runApp(const MyApp());
 }
 
@@ -32,11 +33,8 @@ class App extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => ExchangeRatesListCubit(
-            exchangeRatesRepository: CoinGeckoExchangeRatesReporitory(
-              dio: Dio(),
-            ),
-          )..loadExchangeRates(),
+          create: (context) =>
+              getIt<ExchangeRatesListCubit>()..loadExchangeRates(),
         ),
         BlocProvider(
           create: (context) => PortfolioListCubit()..loadAccounts(),

@@ -3,11 +3,13 @@
 import 'package:crypto_tracker/exchange_rates/exchange_rates.dart';
 import 'package:dio/dio.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:injectable/injectable.dart';
 import 'package:retrofit/retrofit.dart';
 
 part 'coin_gecko_echange_rates_repository.freezed.dart';
 part 'coin_gecko_echange_rates_repository.g.dart';
 
+@Injectable(as: ExchangeRatesRepository, env: ['prod'])
 class CoinGeckoExchangeRatesReporitory extends ExchangeRatesRepository {
   CoinGeckoExchangeRatesReporitory({
     required this.dio,

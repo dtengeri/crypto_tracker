@@ -39,10 +39,7 @@ Map<String, dynamic> _$$__CryptoRateToJson(_$__CryptoRate instance) =>
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers
 
 class __CoinGeckoApi implements _CoinGeckoApi {
-  __CoinGeckoApi(
-    this._dio, {
-    this.baseUrl,
-  }) {
+  __CoinGeckoApi(this._dio) {
     baseUrl ??= 'https://api.coingecko.com/api/v3';
   }
 
