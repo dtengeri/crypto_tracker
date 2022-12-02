@@ -1,5 +1,6 @@
 import 'package:crypto_tracker/exchange_rates/exchange_rates.dart';
 import 'package:crypto_tracker/portfolio/portfolio.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -31,7 +32,11 @@ class App extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => ExchangeRatesListCubit()..loadExchangeRates(),
+          create: (context) => ExchangeRatesListCubit(
+            exchangeRatesRepository: CoinGeckoExchangeRatesReporitory(
+              dio: Dio(),
+            ),
+          )..loadExchangeRates(),
         ),
         BlocProvider(
           create: (context) => PortfolioListCubit()..loadAccounts(),
