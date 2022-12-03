@@ -1,29 +1,57 @@
 import 'package:crypto_tracker/core/core.dart';
 import 'package:crypto_tracker/exchange_rates/exchange_rates.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ExchangeRates extends StatelessWidget {
-  const ExchangeRates({super.key});
+class ExchangeRates extends StatefulWidget {
+  const ExchangeRates({
+    super.key,
+    required this.exchangeRatesRepository,
+  });
+
+  final ExchangeRatesRepository exchangeRatesRepository;
+
+  @override
+  State<ExchangeRates> createState() => _ExchangeRatesState();
+}
+
+class _ExchangeRatesState extends State<ExchangeRates> {
+  Map<String, ExchangeRate> _exchangeRates = {};
+  bool _isLoading = false;
+
+  void _loadExchangeRates() async {
+    setState(() {
+      _isLoading = true;
+    });
+    _exchangeRates = await widget.exchangeRatesRepository.loadExchangeRates();
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadExchangeRates();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ExchangeRatesListCubit, ExchangeRatesListState>(
-      builder: (context, state) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: const [
-            SectionHeader(
-              title: 'Exchange Rates',
-              actions: [
-                _RefreshExchangeRatesButton(),
-                _ExhangeRatesLoadingIndicator()
-              ],
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SectionHeader(
+          title: 'Exchange Rates',
+          actions: [
+            _RefreshExchangeRatesButton(
+              onRefresh: _loadExchangeRates,
             ),
-            _ExhangeRatesGrid(),
+            if (_isLoading) const _ExhangeRatesLoadingIndicator()
           ],
-        );
-      },
+        ),
+        _ExhangeRatesGrid(
+          exchangeRates: _exchangeRates,
+        ),
+      ],
     );
   }
 }
@@ -31,14 +59,15 @@ class ExchangeRates extends StatelessWidget {
 class _RefreshExchangeRatesButton extends StatelessWidget {
   const _RefreshExchangeRatesButton({
     Key? key,
+    required this.onRefresh,
   }) : super(key: key);
+
+  final VoidCallback onRefresh;
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: () {
-        context.read<ExchangeRatesListCubit>().loadExchangeRates();
-      },
+      onPressed: onRefresh,
       icon: const Icon(Icons.refresh),
     );
   }
@@ -49,27 +78,21 @@ class _ExhangeRatesLoadingIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ExchangeRatesListCubit, ExchangeRatesListState>(
-      builder: (context, state) => state.maybeWhen(
-        loading: () => const CircularProgressIndicator(),
-        orElse: () => const SizedBox(),
-      ),
-    );
+    return const CircularProgressIndicator();
   }
 }
 
 class _ExhangeRatesGrid extends StatelessWidget {
-  const _ExhangeRatesGrid();
+  const _ExhangeRatesGrid({
+    required this.exchangeRates,
+  });
+
+  final Map<String, ExchangeRate> exchangeRates;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ExchangeRatesListCubit, ExchangeRatesListState>(
-      builder: (context, state) => state.maybeWhen(
-        orElse: () => const SizedBox(),
-        loaded: (exchangeRates) => _ExchangeRatesRow(
-          exchangeRates: exchangeRates,
-        ),
-      ),
+    return _ExchangeRatesRow(
+      exchangeRates: exchangeRates,
     );
   }
 }

@@ -1,15 +1,10 @@
 import 'package:crypto_tracker/exchange_rates/exchange_rates.dart';
-import 'package:crypto_tracker/get_it.dart';
 import 'package:crypto_tracker/portfolio/portfolio.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 Future<void> main() async {
-  await Hive.initFlutter();
-  Hive.registerAdapter(AccountAdapter());
-  await Hive.openBox<Account>('accounts');
-  configureDependencies();
+  await HiveAccountRepository.init();
   runApp(const MyApp());
 }
 
@@ -25,35 +20,37 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({super.key});
 
   @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  late final ExchangeRatesRepository _exchangeRatesRepository =
+      CoinGeckoExchangeRatesReporitory(
+    dio: Dio(),
+  );
+  late final AccountRepository _accountRepository = HiveAccountRepository();
+
+  @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) =>
-              getIt<ExchangeRatesListCubit>()..loadExchangeRates(),
-        ),
-        BlocProvider(
-          create: (context) => PortfolioListCubit()..loadAccounts(),
-        ),
-        BlocProvider(
-          create: (context) => PortfolioActorCubit(),
-        ),
-      ],
-      child: Scaffold(
-        body: SafeArea(
-          child: Column(
-            children: const [
-              ExchangeRates(),
-              Expanded(
-                child: Portfolio(),
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            ExchangeRates(
+              exchangeRatesRepository: _exchangeRatesRepository,
+            ),
+            Expanded(
+              child: Portfolio(
+                accountRepository: _accountRepository,
+                exchangeRatesRepository: _exchangeRatesRepository,
               ),
-              Text('Data provided by CoinGecko'),
-            ],
-          ),
+            ),
+            const Text('Data provided by CoinGecko'),
+          ],
         ),
       ),
     );
