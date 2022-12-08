@@ -1,4 +1,4 @@
-import 'package:crypto_tracker/exchange_rates/exchange_rates.dart';
+import 'package:exchange_rates/src/domain/domain.dart';
 
 abstract class ExchangeRatesRepository {
   Future<Map<String, ExchangeRate>> loadExchangeRates();

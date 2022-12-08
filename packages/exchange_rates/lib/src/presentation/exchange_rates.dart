@@ -1,14 +1,16 @@
-import 'package:crypto_tracker/core/core.dart';
-import 'package:crypto_tracker/exchange_rates/exchange_rates.dart';
+import 'package:dio/dio.dart';
+import 'package:exchange_rates/src/domain/domain.dart';
+import 'package:exchange_rates/src/infrastructure/infrastructure.dart';
 import 'package:flutter/material.dart';
+import 'package:ui_components/ui_components.dart';
 
 class ExchangeRates extends StatefulWidget {
-  const ExchangeRates({
+  ExchangeRates({
     super.key,
-    required this.exchangeRatesRepository,
   });
 
-  final ExchangeRatesRepository exchangeRatesRepository;
+  final ExchangeRatesRepository exchangeRatesRepository =
+      CoinGeckoExchangeRatesReporitory(dio: Dio());
 
   @override
   State<ExchangeRates> createState() => _ExchangeRatesState();
@@ -134,22 +136,36 @@ class _ExchangeRateCard extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: _CryptoName(
-                    name: exchangeRate.baseCurrency,
-                  ),
-                ),
-                _ChangeDirection(
-                  isDecreasing: exchangeRate.changeInLast24Hours < 0,
-                ),
-              ],
-            ),
+            CoinHeader(exchangeRate: exchangeRate),
             _Rate(rate: exchangeRate.rate),
           ],
         ),
       ),
+    );
+  }
+}
+
+class CoinHeader extends StatelessWidget {
+  const CoinHeader({
+    Key? key,
+    required this.exchangeRate,
+  }) : super(key: key);
+
+  final ExchangeRate exchangeRate;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _CryptoName(
+            name: exchangeRate.baseCurrency,
+          ),
+        ),
+        _ChangeDirection(
+          isDecreasing: exchangeRate.changeInLast24Hours < 0,
+        ),
+      ],
     );
   }
 }

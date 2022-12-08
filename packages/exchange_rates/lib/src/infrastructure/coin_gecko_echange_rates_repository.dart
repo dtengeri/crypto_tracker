@@ -1,7 +1,7 @@
 // ignore_for_file: invalid_annotation_target
 
-import 'package:crypto_tracker/exchange_rates/exchange_rates.dart';
 import 'package:dio/dio.dart';
+import 'package:exchange_rates/src/domain/domain.dart';
 
 const _exchangeRatesUrl =
     'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin%2Cethereum%2Cdogecoin&vs_currencies=usd&include_24hr_change=true';

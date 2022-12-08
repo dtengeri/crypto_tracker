@@ -1,6 +1,6 @@
-import 'package:crypto_tracker/exchange_rates/exchange_rates.dart';
 import 'package:crypto_tracker/portfolio/portfolio.dart';
 import 'package:dio/dio.dart';
+import 'package:exchange_rates/exchange_rates.dart';
 import 'package:flutter/material.dart';
 
 Future<void> main() async {
@@ -28,7 +28,7 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  late final ExchangeRatesRepository _exchangeRatesRepository =
+  late final CoinGeckoExchangeRatesReporitory _exchangeRatesRepository =
       CoinGeckoExchangeRatesReporitory(
     dio: Dio(),
   );
@@ -40,9 +40,7 @@ class _AppState extends State<App> {
       body: SafeArea(
         child: Column(
           children: [
-            ExchangeRates(
-              exchangeRatesRepository: _exchangeRatesRepository,
-            ),
+            ExchangeRates(),
             Expanded(
               child: Portfolio(
                 accountRepository: _accountRepository,

@@ -1,5 +1,5 @@
-import 'package:crypto_tracker/exchange_rates/exchange_rates.dart';
 import 'package:crypto_tracker/portfolio/portfolio.dart';
+import 'package:exchange_rates/exchange_rates.dart';
 import 'package:flutter/material.dart';
 
 class Portfolio extends StatefulWidget {
@@ -10,7 +10,7 @@ class Portfolio extends StatefulWidget {
   });
 
   final AccountRepository accountRepository;
-  final ExchangeRatesRepository? exchangeRatesRepository;
+  final CoinGeckoExchangeRatesReporitory? exchangeRatesRepository;
 
   @override
   State<Portfolio> createState() => _PortfolioState();
